@@ -52,8 +52,8 @@ class Claim(models.Model):
     whiplash = models.IntegerField(db_column='Whiplash', blank=True, null=True)  # Field name made lowercase.
     vehicletype = models.CharField(db_column='VehicleType', max_length=255, blank=True, null=True)  # Field name made lowercase.
     weatherconditions = models.CharField(db_column='WeatherConditions', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    accidentdate = models.DateField(db_column='AccidentDate', blank=True, null=True)  # Field name made lowercase.
-    claimdate = models.DateField(db_column='ClaimDate', blank=True, null=True)  # Field name made lowercase.
+    accidentdate = models.IntegerField(db_column='AccidentDate', blank=True, null=True)  # Field name made lowercase.
+    claimdate = models.IntegerField(db_column='ClaimDate', blank=True, null=True)  # Field name made lowercase.
     vehicleage = models.IntegerField(db_column='VehicleAge', blank=True, null=True)  # Field name made lowercase.
     driverage = models.IntegerField(db_column='DriverAge', blank=True, null=True)  # Field name made lowercase.
     numberofpassengers = models.IntegerField(db_column='NumberOfPassengers', blank=True, null=True)  # Field name made lowercase.
@@ -61,7 +61,7 @@ class Claim(models.Model):
     injurydescription = models.CharField(db_column='InjuryDescription', max_length=255, blank=True, null=True)  # Field name made lowercase.
     policereportfiled = models.IntegerField(db_column='PoliceReportFiled', blank=True, null=True)  # Field name made lowercase.
     witnesspresent = models.IntegerField(db_column='WitnessPresent', blank=True, null=True)  # Field name made lowercase.
-    ismale = models.IntegerField(db_column='IsMale', blank=True, null=True)  # Field name made lowercase.
+    gender = models.CharField(db_column='Gender', max_length=255, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         #managed = False
@@ -85,7 +85,7 @@ class Log(models.Model):
     bodid = models.ForeignKey(Bod, models.PROTECT, db_column='BodID', blank=True, null=True)  # Field name made lowercase.
     affectedtableid = models.ForeignKey('Tablelookup', models.PROTECT, db_column='AffectedTableID', blank=True, null=True)  # Field name made lowercase.
     operationperformed = models.ForeignKey('Operationlookup', models.PROTECT, db_column='OperationPerformed', blank=True, null=True)  # Field name made lowercase.
-    successful = models.IntegerField(db_column='Successful', blank=True, null=True)  # Field name made lowercase.
+    successful = models.BooleanField(db_column='Successful', blank=True, null=True)  # Field name made lowercase.
     notes = models.CharField(db_column='Notes', max_length=255, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
