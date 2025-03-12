@@ -133,7 +133,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Media files (uploaded files)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 LOGIN_REDIRECT_URL = "/"
 
 # Temporary email redirect, this puts password reset emails into the console logs.

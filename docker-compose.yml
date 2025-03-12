@@ -42,7 +42,7 @@ services:
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT}
-      ML_SERVICE_URL: "http://localhost:8001"
+      ML_SERVICE_URL: "http://ml-service:8001" 
       PYTHONPATH: /app
     volumes:
       - .:/app

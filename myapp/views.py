@@ -15,8 +15,15 @@ logger = logging.getLogger(__name__)
 ML_SERVICE_URL = os.environ.get("ML_SERVICE_URL", "http://ml-service:8001")
 
 def index(request):
-    """ View function for site home page (placeholder)"""
+    """View function for site home page - shows claim count"""
+    # Add extensive logging to debug the redirect issue
+    logger.info(f"Rendering index page for user: {request.user}")
+    
+    # Get the count of claims
     num_claims = Claim.objects.all().count()
+    logger.info(f"Found {num_claims} claims")
+    
+    # Explicitly render the index.html template
     context = {
         'num_claims': num_claims
     }
@@ -24,8 +31,17 @@ def index(request):
 
 @login_required
 def ml_dashboard(request):
-    """Redirect to the ML service dashboard"""
-    return redirect(f"{ML_SERVICE_URL}/")
+    """Render the ML dashboard template directly instead of redirecting to ML service"""
+    try:
+        # Get models from the ML service API
+        response = requests.get(f"{ML_SERVICE_URL}/api/models/")
+        models = response.json().get('models', [])
+    except Exception as e:
+        logger.error(f"Error fetching models from ML service: {str(e)}")
+        models = []
+    
+    # Render the ML dashboard template directly
+    return render(request, 'ml/ml.html', {'models': models})
 
 @require_http_methods(["GET"])
 def models_list(request):

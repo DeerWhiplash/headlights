@@ -49,4 +49,3 @@ class ContactInfoAdmin(admin.ModelAdmin):
 @admin.register(FinanceReport)
 class FinanceReportAdmin(admin.ModelAdmin):
     list_display = ('finance_report_id', 'user_id', 'year', 'month', 'cost_incurred', 'generated_invoice')
-    
