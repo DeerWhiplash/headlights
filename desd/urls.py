@@ -14,9 +14,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 from myapp import views as myapp_views
@@ -25,14 +25,14 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("admin/", admin.site.urls),
     
-    # Root redirects to app/
-    path('', RedirectView.as_view(url='/app/')),
+    # Root URL points directly to the index view instead of redirecting
+    path('', myapp_views.index, name='home'),
     
-    # Include myapp URLs under both /app/ and /myapp/ paths
+    # App-specific URLs
     path('app/', include('myapp.urls')),
-    path('myapp/', include('myapp.urls')),  # Added this line to handle /myapp/ URLs
+    path('myapp/', include('myapp.urls')),
     
-    # Add direct API routes at the root level
+    # API routes
     path('api/models/', myapp_views.models_list, name="api_models_list"),
     path('api/upload-model/', myapp_views.upload_model, name="api_upload_model"),
 ]
