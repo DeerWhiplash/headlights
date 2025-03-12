@@ -80,7 +80,7 @@ services:
     volumes:
       - ./ml_service:/app
       - ./media:/shared/media
-      - ./templates/ml:/shared/templates
+      - ./templates:/shared/templates
       - ./static:/shared/static
     command: python manage.py runserver 0.0.0.0:8001
     env_file:
