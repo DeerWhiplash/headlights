@@ -43,7 +43,7 @@ ROOT_URLCONF = "ml_service.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["/app/templates"],  # Use shared templates directory
+        "DIRS": ["/shared/templates"],  # Use shared templates directory
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -93,14 +93,14 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = ["/shared/static"]
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Media files (uploaded files)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = '/shared/media'
 
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/accounts/login/"
