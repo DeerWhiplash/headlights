@@ -15,10 +15,7 @@ logger = logging.getLogger(__name__)
 ML_SERVICE_URL = os.environ.get("ML_SERVICE_URL", "http://ml-service:8001")
 
 def index(request):
-    """View function for site home page - shows claim count"""
-    # Add extensive logging to debug the redirect issue
-    logger.info(f"Rendering index page for user: {request.user}")
-    
+    """View function for site home page - shows claim count"""    
     # Get the count of claims
     num_claims = Claim.objects.all().count()
     logger.info(f"Found {num_claims} claims")
@@ -50,7 +47,6 @@ def models_list(request):
         response = requests.get(f"{ML_SERVICE_URL}/api/models/")
         return JsonResponse(response.json())
     except Exception as e:
-        logger.error(f"Error connecting to ML service: {str(e)}")
         return JsonResponse({
             'status': 'error',
             'message': f"Error connecting to ML service: {str(e)}"
@@ -70,7 +66,6 @@ def upload_model(request):
         response = requests.post(f"{ML_SERVICE_URL}/api/upload-model/", files=files, data=data)
         return JsonResponse(response.json())
     except Exception as e:
-        logger.error(f"Error connecting to ML service: {str(e)}")
         return JsonResponse({
             'status': 'error',
             'message': f"Error connecting to ML service: {str(e)}"
