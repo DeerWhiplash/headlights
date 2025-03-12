@@ -3,9 +3,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class MyappConfig(AppConfig):
+class MLAppConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "myapp"
+    name = "ml_app"
 
     def ready(self):
         # Import here to avoid circular imports
@@ -13,8 +13,7 @@ class MyappConfig(AppConfig):
         import os
         if os.environ.get('RUN_MAIN', None) != 'true':
             try:
-                # moved model_check_on_startup to the ML service
-                # log that we're starting
-                logger.info("Application starting up...")
+                from .views import model_check_on_startup
+                model_check_on_startup()
             except Exception as e:
-                logger.warning(f"Failed during startup: {e}")
+                logger.warning(f"Failed to run model check on startup: {e}")
