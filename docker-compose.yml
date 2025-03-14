@@ -18,6 +18,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
 
   django-web:
     build: .
@@ -27,6 +29,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      ml-service:
+        condition: service_started
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DEBUG: ${DEBUG}
@@ -38,13 +42,57 @@ services:
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT}
+      ML_SERVICE_URL: "http://ml-service:8001"
       PYTHONPATH: /app
     volumes:
       - .:/app
       - ./media:/app/media
+      - ./templates:/app/templates
+      - ./static:/app/static
+    restart: always
     command: python manage.py runserver 0.0.0.0:8000
     env_file:
       - .env
+    networks:
+      - app-network
+
+  ml-service:
+    build: 
+      context: ./ml_service
+      dockerfile: Dockerfile
+    container_name: ml-service
+    ports:
+      - "8001:8001"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DEBUG: ${DEBUG}
+      DJANGO_LOGLEVEL: ${DJANGO_LOGLEVEL}
+      DJANGO_ALLOWED_HOSTS: "localhost,ml-service,django-docker"
+      DATABASE_ENGINE: "django.db.backends.mysql"
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      PYTHONPATH: /app
+    volumes:
+      - ./ml_service:/app
+      - ./media:/shared/media
+      - ./templates:/shared/templates
+      - ./static:/shared/static
+    restart: always
+    command: python manage.py runserver 0.0.0.0:8001
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   mysql_data:

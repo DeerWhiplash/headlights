@@ -5,204 +5,95 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 
 import logging
-import pickle
-import os
-
-from myapp.models import Model
+import requests
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
 
-def model_check_on_startup() -> None:
-    """
-    This method checks if any ML models are available on startup.
-    """
-
-    logger.info("Checking for available ML models on startup...")
-
-    try:
-        # Get all models from the database
-        models_count = Model.objects.count()
-        logger.info(f"Found {models_count} ML models in the system")
-    except Exception as e:
-        logger.error(f"Unexpected error checking ML models on startup: {str(e)}")
-
-
 @method_decorator(login_required, name="dispatch")
 class MLDashboardView(View):
     """
-    This class handles the rendering and processing of the machine learning dashboard page.
+    This class handles rendering the machine learning dashboard page.
     """
 
-    template_name = "ml.html"
+    template_name = "ml/ml.html"
 
     def get(self, request: HttpRequest) -> HttpResponse:
         """
         Handles the GET request for the machine learning dashboard page.
-
-        Args:
-            request: the GET request object.
-
-        Returns:
-            render: the ml.html template.
+        Renders the ML dashboard template.
         """
-
-        # Get all models to display on the page
-        models = Model.objects.all()
-
         logger.info(f"{request.user} accessed the machine learning dashboard page.")
-        return render(request, self.template_name, {'models': models})
+        return render(request, self.template_name)
 
 
-@method_decorator(require_http_methods(["GET"]), name="dispatch") # TODO: Is this necessary without a POST method?
+@method_decorator(require_http_methods(["GET"]), name="dispatch")
 class ModelListView(View):
     """
-    This class handles the listing of all available ML models directly from the Django database.
+    This class proxies requests for listing ML models to the ML service.
     """
 
     def get(self, request: HttpRequest) -> JsonResponse:
         """
         Handles the GET request for listing all available ML models.
-
-        Args:
-            request: the GET request object.
-
-        Raises:
-            Exception: if an error occurs while retrieving the models.
-
-        Returns:
-            JsonResponse: a JSON response containing the list of models or no models found.
+        Proxies the request to the ML service.
         """
-
         try:
-            # Get all models from the database
-            models = Model.objects.all()
-
-            models_list = [
-                {
-                    'id': model.model_id,
-                    'name': model.model_name,
-                    'notes': model.notes,
-                    'filepath': model.filepath
-                }
-                for model in models
-            ]
-            
-            # If no models found, return a specific message
-            if not models_list:
-                return JsonResponse({
-                    'status': 'success',
-                    'message': 'no models found'
-                })
-            
-            logger.info(f"Successfully retrieved {len(models_list)} models from the database.")
-            return JsonResponse({
-                'status': 'success',
-                'models': models_list
-            })
-
+            ml_service_url = getattr(settings, 'ML_SERVICE_URL', 'http://ml-service:8001')
+            response = requests.get(f"{ml_service_url}/api/models/")
+            return JsonResponse(response.json())
         except Exception as e:
-            logger.error(f"Error getting models: {str(e)}")
-
+            logger.error(f"Error getting models from ML service: {str(e)}")
             return JsonResponse({
                 'status': 'error',
-                'message': f"An unexpected error occurred: {str(e)}"
+                'message': f"Error communicating with ML service: {str(e)}"
             }, status=500)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
 class UploadModelView(View):
     """
-    This class handles the uploading of a new ML model.
+    This class proxies requests for uploading ML models to the ML service.
     """
 
     def post(self, request: HttpRequest) -> JsonResponse:
         """
         Handles the POST request for uploading a new ML model.
-
-        Args:
-            request: the POST request object.
-
-        Raises:
-            Exception: if an error occurs while uploading the model.
-
-        Returns:
-            JsonResponse: a JSON response indicating success or failure of the upload.
+        Proxies the request to the ML service.
         """
-
         try:
-            # Get model name and notes from the request
-            model_name = request.POST.get('model_name')
-            notes = request.POST.get('notes', '')
+            ml_service_url = getattr(settings, 'ML_SERVICE_URL', 'http://ml-service:8001')
             
-            # Check if model file was provided
-            logger.info("No model provided in the request.")
-            if 'model_file' not in request.FILES:
+            # Forward files and data to the ML service
+            model_file = request.FILES.get('model_file')
+            
+            if not model_file:
                 return JsonResponse({
                     'status': 'error',
                     'message': 'No model file provided'
                 }, status=400)
             
-            # Get the model file
-            model_file = request.FILES['model_file']
+            # Create multipart form data request
+            files = {'model_file': (model_file.name, model_file, model_file.content_type)}
+            data = {k: v for k, v in request.POST.items()}
             
-            # Check if file has a valid extension (e.g., .pkl)
-            logger.info("Invalid file format. Only .pkl files are allowed.")
-            if not model_file.name.endswith('.pkl'):
-                return JsonResponse({
-                    'status': 'error',
-                    'message': 'Invalid file format. Only .pkl files are allowed.'
-                }, status=400)
-            
-            # Create a directory to store models if it doesn't exist
-            upload_dir = os.path.join('media', 'models')
-            os.makedirs(upload_dir, exist_ok=True)
-            
-            # Save the file
-            file_path = os.path.join(upload_dir, model_file.name)
-            with open(file_path, 'wb+') as destination:
-                for chunk in model_file.chunks():
-                    destination.write(chunk)
-            
-            # Create a new model record in the database
-            # NOTE: Field names updated to match the model's field names
-            model = Model.objects.create(
-                model_name=model_name,  # Updated from modelname to model_name
-                notes=notes,
-                filepath=file_path
+            # Send request to ML service
+            response = requests.post(
+                f"{ml_service_url}/api/upload-model/",
+                files=files,
+                data=data
             )
             
-            logger.info("Model uploaded successfully.")
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Model uploaded successfully',
-                'model_id': model.model_id  # Updated from modelid to model_id
-            })
-        
+            # Return the ML service response
+            return JsonResponse(response.json(), status=response.status_code)
+            
         except Exception as e:
-            logger.error(f"Error uploading model: {str(e)}")
+            logger.error(f"Error uploading model to ML service: {str(e)}")
             return JsonResponse({
                 'status': 'error',
-                'message': f"An unexpected error occurred: {str(e)}"
+                'message': f"Error communicating with ML service: {str(e)}"
             }, status=500)
-
-
-# TODO: Figure out where this class should live
-class MLUtils:
-    """
-    Utility class for ML operations
-    """
-    
-    @staticmethod
-    def load_model(model_path):
-        """Load a machine learning model from file"""
-        try:
-            with open(model_path, 'rb') as f:
-                model = pickle.load(f)
-            return model
-        except Exception as e:
-            logger.error(f"Error loading model: {str(e)}")
-            return None
