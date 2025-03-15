@@ -29,9 +29,11 @@ class IndexView(View):
         """
 
         num_claims = Claim.objects.all().count()
+        
         context = {
-            'num_claims': num_claims
+            'num_claims': num_claims,
         }
 
         logger.info(f"{request.user} accessed the index page.")
         return render(request, self.template_name, context=context)
+    

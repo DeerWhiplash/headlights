@@ -1,0 +1,49 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Customer Dashboard</h1>
+    <ul>
+        <li><strong>Claims:</strong> {{ num_claims }}</li>
+    </ul>
+    <div class="container">
+        <h2>Upload Claims</h2>
+        <form id="uploadClaimsForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="claimsFile">Claims Data File (.csv):</label>
+                <input type="file" id="claimsFile" name="claims_file" accept=".csv" required>
+            </div>
+            <input id="claimUploadSubmit" type="submit" text="Upload"></input>
+        </form>
+        <div id="errorMessage" style="white-space: pre-line" class="error-message"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadClaimsForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            document.getElementById("claimUploadSubmit").disabled = true;
+
+            const response = await fetch('./record-upload', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                location.reload();
+
+            } else {
+                const errorMessage = document.getElementById('errorMessage');
+                errorMessage.textContent = result.message;
+                errorMessage.style.display = 'block';
+            }
+
+            document.getElementById("claimUploadSubmit").disabled = false;
+        });
+    </script>
+    
+{% endblock %}
