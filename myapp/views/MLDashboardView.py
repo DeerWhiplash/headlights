@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
@@ -13,8 +13,7 @@ import requests
 # Configure logging
 logger = logging.getLogger(__name__)
 
-
-@method_decorator(login_required, name="dispatch")
+@method_decorator([login_required, permission_required("myapp.add_predictionmodel")], name="dispatch")
 class MLDashboardView(View):
     """
     This class handles rendering the machine learning dashboard page.
@@ -29,7 +28,6 @@ class MLDashboardView(View):
         """
         logger.info(f"{request.user} accessed the machine learning dashboard page.")
         return render(request, self.template_name)
-
 
 @method_decorator(require_http_methods(["GET"]), name="dispatch")
 class ModelListView(View):
@@ -59,7 +57,6 @@ class ModelListView(View):
                 'status': 'error',
                 'message': f"Error communicating with ML service: {str(e)}"
             }, status=500)
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class UploadModelView(View):

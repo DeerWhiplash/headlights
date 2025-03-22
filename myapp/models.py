@@ -172,8 +172,8 @@ class UserProfile(models.Model):
         Used to more easily keep track of user group IDs instead of leaving random numbers all over the codebase
         """
         END_USER_ID = 1
-        ENGINEERS_ID = 2
-        ADMINISTRATORS_ID = 3
+        ENGINEER_ID = 2
+        ADMINISTRATOR_ID = 3
         FINANCE_ID = 4
     
     class Meta:

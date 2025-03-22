@@ -53,7 +53,7 @@ class AccountCreationView(View):
 
     def __render_account_creation_page(self, request, error_messages: list[Message]) -> HttpResponse:
         # Admin should not be a selectable user type
-        user_groups = Group.objects.filter(~Q(id=UserProfile.GroupIDs.ADMINISTRATORS_ID))
+        user_groups = Group.objects.filter(~Q(id=UserProfile.GroupIDs.ADMINISTRATOR_ID))
         
         context = {
             'user_groups': user_groups,

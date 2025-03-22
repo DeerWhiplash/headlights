@@ -1,6 +1,6 @@
+from django.contrib.auth.models import User, Group, Permission
 from django.test import Client, TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User, Group
 
 from myapp.tests.config import ErrorCodes, Views, Templates
 from myapp.tests.test_Models import TestModels
@@ -9,7 +9,7 @@ from myapp.tests.test_Models import TestModels
 USER_NAME = "testUser1"
 USER_PASSWORD = "testPassword1"
 
-GROUP = "Administrators"
+GROUP = "Administrator"
 
 class BaseViewTest(TestCase):
 
@@ -20,6 +20,7 @@ class BaseViewTest(TestCase):
         TestModels.setUp()
         self.group = Group(name=GROUP)
         self.group.save()
+        self.group.permissions.set(Permission.objects.all())
 
         self.user = User.objects.create_user(username=USER_NAME, password=USER_PASSWORD)
         self.user.groups.add(self.group)
