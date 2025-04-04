@@ -5,7 +5,7 @@ from django.urls import path
 
 from myapp.views.CustomerDashBoardView import CustomerDashboardView, ClaimUploadView, PredictionFeedbackView
 from myapp.views.IndexView import IndexView
-from myapp.views.MLDashboardView import MLDashboardView, ModelListView, UploadModelView
+from myapp.views.MLDashboardView import MLDashboardView, UploadModelView
 from myapp.views.AccountManagementView import AccountCreationView, AccountContactDetailsView
 from myapp.views.FinanceDashboardViews import FinanceDashboardView, CompanyDetailsView, CompanyManageEmployeesView
 
@@ -30,7 +30,6 @@ urlpatterns = [
     path("finance/manage-employees/", CompanyManageEmployeesView.as_view(), name="company_manage_employees"),
     
     # ML-related API endpoints
-    path("api/models/", ModelListView.as_view(), name="models_list"),
     path("api/upload-model/", UploadModelView.as_view(), name="upload_model"),
     # Additional endpoints could be added here as needed
 ]

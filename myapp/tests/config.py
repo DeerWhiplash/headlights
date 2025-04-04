@@ -2,6 +2,7 @@ from datetime import datetime
 
 class ErrorCodes:
     OK = 200
+    REDIRECT = 302
     BAD_REQUEST = 400
     UNAUTHORIZED = 401
     FORBIDDEN = 403
@@ -26,6 +27,7 @@ class Views:
 class Templates:
     HOME = "index.html"
     MACHINE_LEARNING = "ml/ml.html"
+    ML_UPLOAD_MODEL = "ml/upload_model.html"
     CUSTOMER = "customer.html"
     FINANCE = "finance.html"
     CONTACT_DETAILS = "contact_details.html"

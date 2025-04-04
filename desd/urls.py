@@ -20,7 +20,7 @@ from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 
-from myapp.views.MLDashboardView import ModelListView, UploadModelView
+from myapp.views.MLDashboardView import UploadModelView
 
 urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
@@ -34,7 +34,6 @@ urlpatterns = [
     path('myapp/', include('myapp.urls')),  # Added this line to handle /myapp/ URLs
     
     # Add direct API routes at the root level
-    path('api/models/', ModelListView.as_view(), name="api_models_list"),
     path('api/upload-model/', UploadModelView.as_view(), name="api_upload_model"),
 ]
 
