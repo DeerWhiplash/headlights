@@ -1,4 +1,4 @@
-name: Django CI
+name: Headlights CI
 
 on:
   push:
@@ -8,84 +8,132 @@ on:
       - main
 
 jobs:
-  build:
+
+  # Run Unit Tests
+  test:
+    name: Test
+    defaults:
+      run:
+        shell: bash
     runs-on: ubuntu-latest
+    environment: development
     strategy:
-      max-parallel: 4
       matrix:
         python-version: [3.13]
 
-    services:
-      mysql:
-        image: mysql:8.4
-        ports:
-          - 3306:3306
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: dockerdjango
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Create .env file from GitHub Secrets
+      run: |
+        echo "DATABASE_NAME=dockerdjango" >> .env
+        echo "DATABASE_USERNAME=dbuser" >> .env
+        echo "DATABASE_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+        echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+        echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
+        echo "DATABASE_PORT=${{ secrets.DATABASE_PORT }}" >> .env
+        echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+        echo "DEBUG=True" >> .env
+        echo "DJANGO_LOGLEVEL=info" >> .env
+        echo "DJANGO_ALLOWED_HOSTS=localhost" >> .env
+        echo "ML_SERVICE_URL=http://ml-service:8001" >> .env
+
+    - name: Build and run Docker containers
+      run: |
+        docker compose -f docker-compose.yml up -d --build
+
+    - name: Grant Database Permissions to dbuser
+      run: |
+        docker exec headlights-db-1 mysql -uroot -p${{ secrets.MYSQL_ROOT_PASSWORD }} -e "\
+        GRANT ALL PRIVILEGES ON *.* TO 'dbuser'@'%'; \
+        FLUSH PRIVILEGES;"
+
+    - name: Copy Media to ML-Service
+      run: |
+        docker exec ml-service mkdir -p /shared/media/models
+        docker cp dataset/limited_model.pkl ml-service:/shared/media/models/limited_model.pkl
+
+    - name: Run Main App Tests
+      run: |
+        docker exec django-docker coverage run --rcfile=./config/test/.coveragerc manage.py test myapp
+        docker exec django-docker coverage report -m
+        docker exec django-docker coverage xml -o coverage-myapp.xml
+
+    - name: Run ML-Service Tests
+      run: |
+        docker exec ml-service coverage run --rcfile=./config/test/.coveragerc manage.py test ml_app
+        docker exec ml-service coverage report -m
+        docker exec ml-service coverage xml -o coverage-ml_app.xml
+
+    - name: Copy Coverage Reports
+      run: |
+        docker cp django-docker:/app/coverage-myapp.xml ./coverage-myapp.xml
+        docker cp ml-service:/app/coverage-ml_app.xml ./coverage-ml_app.xml
+
+    - name: Upload Coverage to Codecov
+      uses: codecov/codecov-action@v5
+
+    - name: Stop and Clean Up
+      run: |
+        docker compose down
+        docker system prune -f
+
+  # GitHub Security Scanning using CodeQL. This checks security vulnerabilities
+  security_scan:
+    name: "Security Scanning"
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      security-events: write
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  # Build and Push Images to DockerHub
+  build_and_push:
+    name: Build and Push to DockerHub
+    runs-on: ubuntu-latest
+    environment: production
+    needs:
+      - test
+      - security_scan
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install Dependencies
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build Services
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        cd ml_project
-        pip install -r requirements.txt
-        cd ../
-    - name: Apply database migrations
-      env:
-          DATABASE_ENGINE: django.db.backends.mysql
-          DATABASE_NAME: dockerdjango
-          DATABASE_USERNAME: root
-          DATABASE_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-          DEBUG: "True"
-          TESTING: "True"
+        docker compose -f docker-compose.yml build
+      
+    - name: Tag Images
       run: |
-        python manage.py migrate
-        python manage.py create_crud_mappings
-        python manage.py populate_table_lookup
-    - name: Run Tests for myapp
-      env:
-        DATABASE_ENGINE: django.db.backends.mysql
-        DATABASE_NAME: dockerdjango
-        DATABASE_USERNAME: root
-        DATABASE_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-        DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-        DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
-        DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-        DEBUG: "True"
-        TESTING: "True"
-        ML_SERVICE_URL: "http://localhost:8001" 
+        docker tag headlights-django-web:latest ${{ secrets.DOCKERHUB_USERNAME }}/headlights:django-web
+        docker tag headlights-ml-service:latest ${{ secrets.DOCKERHUB_USERNAME }}/headlights:ml-service
+
+    - name: Push Images
       run: |
-        coverage run --rcfile ./config/test/.coveragerc --data-file=.coverage.myapp manage.py test myapp
-    - name: Run Tests for ml_app
-      env:
-        DATABASE_ENGINE: django.db.backends.mysql
-        DATABASE_NAME: dockerdjango
-        DATABASE_USERNAME: root
-        DATABASE_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-        DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-        DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
-        DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-        DEBUG: "True"
-        TESTING: "True"
-      run: |
-        coverage run --rcfile ./config/test/.coveragerc --data-file=.coverage.ml_app ml_project/manage.py test ml_app
-    - name: Generate and output coverage report
-      run: |
-        coverage combine .coverage.myapp .coverage.ml_app
-        coverage report -m
-        coverage xml
-    - name: Upload coverage report to Codecov
-      uses: codecov/codecov-action@v5
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/headlights:django-web
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/headlights:ml-service
