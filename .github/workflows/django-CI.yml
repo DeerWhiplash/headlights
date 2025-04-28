@@ -9,6 +9,34 @@ on:
 
 jobs:
 
+  # Linting using Ruff
+  lint:
+    name: Ruff Lint
+    defaults:
+      run:
+        shell: bash
+    runs-on: ubuntu-latest
+    environment: development
+    strategy:
+      matrix:
+        python-version: [3.13]
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+
+    - name: Ruff Lint
+      uses: astral-sh/ruff-action@v3.2.1
+
   # Run Unit Tests
   test:
     name: Test
@@ -20,6 +48,8 @@ jobs:
     strategy:
       matrix:
         python-version: [3.13]
+    needs:
+      - lint
 
     steps:
     - name: Checkout Code
