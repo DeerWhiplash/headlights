@@ -48,6 +48,11 @@
             <li class="nav-item">
               <a class="nav-link {% if 'finance_dashboard' in request.path %}active fw-bold{% endif %}" href="{% url 'finance_dashboard' %}">Finance Dashboard</a>
             </li>
+            {% if user.is_staff %}
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/">Admin Dashboard</a>
+              </li>
+            {% endif %}
           </ul>
           <div class="navbar-nav">
             <!-- Dark mode toggle -->
