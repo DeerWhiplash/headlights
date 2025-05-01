@@ -43,7 +43,7 @@
               <a class="nav-link {% if 'customer_dashboard' in request.path %}active fw-bold{% endif %}" href="{% url 'customer_dashboard' %}">User Dashboard</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {% if 'engineer' in request.path %}active fw-bold{% endif %}" href="{% url 'engineer' %}">ML Dashboard</a>
+              <a class="nav-link {% if 'engineer' in request.path %}active fw-bold{% endif %}" href="{% url 'engineer' %}">Engineer Dashboard</a>
             </li>
             <li class="nav-item">
               <a class="nav-link {% if 'finance_dashboard' in request.path %}active fw-bold{% endif %}" href="{% url 'finance_dashboard' %}">Finance Dashboard</a>
@@ -103,7 +103,7 @@
                 <div class="list-group list-group-flush">
                   <a href="{% url 'index' %}" class="list-group-item list-group-item-action {% if request.path == '/' %}active{% endif %}">Home</a>
                   <a href="{% url 'customer_dashboard' %}" class="list-group-item list-group-item-action {% if 'customer_dashboard' in request.path %}active{% endif %}">User Dashboard</a>
-                  <a href="{% url 'engineer' %}" class="list-group-item list-group-item-action {% if 'engineer' in request.path %}active{% endif %}">ML Dashboard</a>
+                  <a href="{% url 'engineer' %}" class="list-group-item list-group-item-action {% if 'engineer' in request.path %}active{% endif %}">Engineer Dashboard</a>
                   <a href="{% url 'finance_dashboard' %}" class="list-group-item list-group-item-action {% if 'finance_dashboard' in request.path %}active{% endif %}">Finance</a>
                   {% if user.is_authenticated %}
                   <a href="{% url 'contact_details' %}" class="list-group-item list-group-item-action {% if 'contact_details' in request.path %}active{% endif %}">Contact Details</a>
