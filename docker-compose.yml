@@ -1,3 +1,7 @@
+# Base Docker Compose file, override for local development or production deployment
+
+version: "3.9"
+
 services:
   db:
     image: mysql:8.4
@@ -6,9 +10,9 @@ services:
       MYSQL_USER: ${DATABASE_USERNAME}
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    command: --pid-file=/var/run/mysql/mysqld.pid
     ports:
       - "3307:3306"
-    command: --pid-file=/var/run/mysql/mysqld.pid
     volumes:
       - mysql_data:/var/lib/mysql
     env_file:
@@ -20,6 +24,7 @@ services:
       retries: 100
     networks:
       - app-network
+
   ngrok:
     image: ngrok/ngrok:latest
     container_name: ngrok-tunnel
@@ -34,17 +39,12 @@ services:
       - app-network
 
   django-web:
-    build: .
     container_name: django-docker
-    ports:
-      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DEBUG: ${DEBUG}
-      DJANGO_LOGLEVEL: ${DJANGO_LOGLEVEL}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
       DATABASE_ENGINE: "django.db.backends.mysql"
       DATABASE_NAME: ${DATABASE_NAME}
@@ -56,18 +56,10 @@ services:
       PYTHONPATH: /app
     volumes:
       - .:/app
-      - ./media:/app/media
+      - media:/app/media
+      - static:/app/static
       - ./templates:/app/templates
-      - ./static:/app/static
     restart: always
-    command: >
-      sh -cx "apt-get --assume-yes install curl
-      && python manage.py migrate 
-      && python manage.py create_crud_mappings
-      && python manage.py populate_table_lookup
-      && python manage.py loaddata myapp/migrations/data_dumps/*_data.json
-      && python manage.py collectstatic --no-input
-      && python manage.py runserver 0.0.0.0:8000 "
     env_file:
       - .env
     healthcheck:
@@ -79,12 +71,7 @@ services:
       - app-network
 
   ml-service:
-    build: 
-      context: ./ml_project
-      dockerfile: Dockerfile
     container_name: ml-service
-    ports:
-      - "8001:8001"
     depends_on:
       db:
         condition: service_healthy
@@ -92,8 +79,6 @@ services:
         condition: service_healthy
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DEBUG: ${DEBUG}
-      DJANGO_LOGLEVEL: ${DJANGO_LOGLEVEL}
       DJANGO_ALLOWED_HOSTS: "localhost,ml-service,django-docker"
       DATABASE_ENGINE: "django.db.backends.mysql"
       DATABASE_NAME: ${DATABASE_NAME}
@@ -104,19 +89,20 @@ services:
       PYTHONPATH: /app
     volumes:
       - ./ml_project:/app
-      - ./media:/shared/media
+      - media:/shared/media
+      - static:/shared/static
       - ./templates:/shared/templates
-      - ./static:/shared/static
     restart: always
-    command: python manage.py runserver 0.0.0.0:8001
     env_file:
       - .env
     networks:
       - app-network
 
+volumes:
+  mysql_data:
+  static:
+  media:
+
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  mysql_data:

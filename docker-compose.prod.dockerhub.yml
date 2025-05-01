@@ -1,0 +1,29 @@
+# Docker Compose file for production deployment using Docker Hub images (docker compose -f docker-compose.yml -f docker-compose.prod.dockerhub.yml up --build)
+
+services:
+  django-web:
+    image: ${DOCKERHUB_USERNAME}/headlights:django-web # Pulling from Docker Hub
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_ENV: PROD
+      DEBUG: 0
+
+  ml-service:
+    image: ${DOCKERHUB_USERNAME}/headlights:ml-service # Pulling from Docker Hub
+    command: gunicorn ml_service.wsgi:application --bind 0.0.0.0:8001
+    environment:
+      DEBUG: 0
+
+  nginx:
+    build:
+      context: ./nginx
+    volumes:
+      - ./static_deployment:/static
+      - media:/media
+    ports:
+      - "80:80"
+    depends_on:
+      - django-web
+    networks:
+      - app-network
