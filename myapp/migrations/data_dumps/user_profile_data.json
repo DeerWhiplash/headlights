@@ -1,0 +1,122 @@
+[
+    {
+      "model": "myapp.UserProfile",
+      "pk": 1,
+      "fields": {
+        "auth_id": 1,
+        "contact_info_id": 1,
+        "company_id": 1,
+        "is_company_owner": true
+      }
+    },
+    {
+      "model": "myapp.UserProfile",
+      "pk": 2,
+      "fields": {
+        "auth_id": 2,
+        "contact_info_id": 2,
+        "company_id": 1,
+        "is_company_owner": false
+      }
+    },
+    {
+      "model": "myapp.UserProfile",
+      "pk": 3,
+      "fields": {
+        "auth_id": 3,
+        "contact_info_id": 3,
+        "company_id": 1,
+        "is_company_owner": false
+      }
+    },
+    {
+      "model": "myapp.UserProfile",
+      "pk": 4,
+      "fields": {
+        "auth_id": 4,
+        "contact_info_id": 4,
+        "company_id": 1,
+        "is_company_owner": false
+      }
+    },
+    {
+      "model": "myapp.UserProfile",
+      "pk": 5,
+      "fields": {
+        "auth_id": 5,
+        "contact_info_id": 5,
+        "company_id": 1,
+        "is_company_owner": false
+      }
+    },
+    {
+      "model": "myapp.UserProfile",
+      "pk": 6,
+      "fields": {
+        "auth_id": 6,
+        "contact_info_id": 6,
+        "company_id": 1,
+        "is_company_owner": false
+      }
+    },
+    {
+      "model": "myapp.UserProfile",
+      "pk": 7,
+      "fields": {
+        "auth_id": 7,
+        "contact_info_id": 7,
+        "company_id": 1,
+        "is_company_owner": false
+      }
+    },
+    {
+      "model": "myapp.UserProfile",
+      "pk": 8,
+      "fields": {
+        "auth_id": 8,
+        "contact_info_id": 8,
+        "company_id": 1,
+        "is_company_owner": false
+      }
+    },
+    {
+      "model": "myapp.UserProfile",
+      "pk": 9,
+      "fields": {
+        "auth_id": 9,
+        "contact_info_id": 9,
+        "company_id": 1,
+        "is_company_owner": false
+      }
+    },
+    {
+      "model": "myapp.UserProfile",
+      "pk": 10,
+      "fields": {
+        "auth_id": 10,
+        "contact_info_id": 10,
+        "company_id": 1,
+        "is_company_owner": false
+      }
+    },
+    {
+      "model": "myapp.UserProfile",
+      "pk": 11,
+      "fields": {
+        "auth_id": 11,
+        "contact_info_id": 11,
+        "company_id": 1,
+        "is_company_owner": false
+      }
+    },
+    {
+      "model": "myapp.UserProfile",
+      "pk": 12,
+      "fields": {
+        "auth_id": 12,
+        "contact_info_id": 12,
+        "company_id": 1,
+        "is_company_owner": false
+      }
+    }
+]
