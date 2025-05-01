@@ -413,7 +413,7 @@ class PredictionModel(models.Model):
         """
         This function returns a PredictionModel in a neat string format.
         """
-        price_str = f"${self.price_per_prediction:.2f}" if self.price_per_prediction is not None else "N/A"
+        price_str = f"£{self.price_per_prediction:.2f}" if self.price_per_prediction is not None else "N/A"
         return f"{self.model_name} ({self.model_type}) – {price_str}"
 
 
