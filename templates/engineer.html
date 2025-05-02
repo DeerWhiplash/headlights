@@ -214,7 +214,14 @@
                                 <td>{{ record.upload_date }}</td>
                                 <td>{{ record.user_id.user_profile_id|default:"-" }}</td>
                                 <td>{{ record.claim_id.claim_id|default:"-" }}</td>
-                                <td>{{ record.feedback_id.notes|default:"-" }}</td>
+                                <td>
+                                    {% if record.feedback_id %}
+                                        {{ record.feedback_id.rating }}/5 
+                                        {{ record.feedback_id.notes }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
                                 <td>{{ record.model_id.model_name|default:"-" }}</td>
                                 <td>{{ record.predicted_settlement|default:"-" }}</td>
                                 <td>{{ record.user_settlement|default:"-" }}</td>
@@ -230,7 +237,7 @@
 
             {% if uploaded_records.has_other_pages %}
                 <div class="card-footer py-3 d-flex scrollable-x">
-                    <nav aria-label="Page navigation">
+                    <nav aria-label="Page navigation" style="margin: auto;">
                         <ul class="pagination mb-0">
                             {% if uploaded_records.has_previous %}
                             <li class="page-item">
