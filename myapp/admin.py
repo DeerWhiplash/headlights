@@ -12,7 +12,8 @@ class CustomUserChangeForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["email"].validators.pop(0)
-        
+
+form = CustomUserChangeForm()
 UserAdmin.form = CustomUserChangeForm
 
 UserAdmin.list_display = list(UserAdmin.list_display) + ["is_active"]
