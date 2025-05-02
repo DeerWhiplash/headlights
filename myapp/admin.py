@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
 from .models import Claim, Feedback, DatabaseLog, PredictionModel, OperationLookup, TableLookup, TrainingDataset, UploadedRecord, UserProfile, Company, ContactInfo, FinanceReport
-import logging
 
 #remove admin form validation so these dont block saves
 User._meta.get_field("username").validators.pop(0)
@@ -15,6 +14,9 @@ class CustomUserChangeForm(UserChangeForm):
         self.fields["email"].validators.pop(0)
         
 UserAdmin.form = CustomUserChangeForm
+
+UserAdmin.list_display = list(UserAdmin.list_display) + ["is_active"]
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
