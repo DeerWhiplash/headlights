@@ -124,7 +124,7 @@ class EngineerDashboardView(View):
             except EmptyPage:
                 models = paginator.page(paginator.num_pages)
 
-            uploaded_records_list = UploadedRecord.objects.all().order_by('-upload_date')
+            uploaded_records_list = UploadedRecord.objects.all().order_by('-uploaded_record_id')
             records_paginator = Paginator(uploaded_records_list, 10)
             page_records = request.GET.get('page_records')
 
