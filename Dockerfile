@@ -25,6 +25,7 @@ COPY . /app/
 EXPOSE 8000
 
 CMD [ \
+    "apt-get", "--assume-yes", "install", "curl", "&&", \
     "python", "manage.py", "migrate", "&&", \
     "python", "manage.py", "create_crud_mappings", "&&", \
     "python", "manage.py", "populate_table_lookup",  "&&", \
