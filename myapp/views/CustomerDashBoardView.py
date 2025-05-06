@@ -152,7 +152,7 @@ def get_claim_prediction(claim, model):
 @method_decorator(login_required, name="dispatch")
 class CustomerDashboardView(View):
     """
-    This class handles the rendering and proccessing of the end-user dashboard page.
+    This class handles the rendering and processing of the end-user dashboard page.
     """
 
     template_name = "customer.html"
