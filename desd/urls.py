@@ -19,11 +19,55 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
-from myapp.views.MLDashboardView import UploadModelView
+from desd.settings import DEBUG
+from myapp.views.EngineerDashboardView import EngineerDashboardView
+from myapp.views.ErrorView import Error_400, Error_403, Error_404, Error_500
+from myapp.forms.CustomAuthenticationForm import CustomAuthenticationForm
+
+handler400 = Error_400.as_view()
+handler403 = Error_403.as_view()
+handler404 = Error_404.as_view()
+handler500 = Error_500.as_view()
 
 urlpatterns = [
-    path("accounts/", include("django.contrib.auth.urls")),
+    # LOGIN/LOGOUT
+    path('accounts/login/', auth_views.LoginView.as_view(
+        template_name='registration/login.html', 
+        authentication_form=CustomAuthenticationForm
+    ), name='login'),
+    
+    path('accounts/logout/', auth_views.LogoutView.as_view(
+        template_name='registration/logged_out.html'
+    ), name='logout'),
+
+    # PASSWORD CHANGE (requires user to be logged in)
+    path('accounts/password_change/', auth_views.PasswordChangeView.as_view(
+        template_name='registration/password_change_form.html'
+    ), name='password_change'),
+    
+    path('accounts/password_change/done/', auth_views.PasswordChangeDoneView.as_view(
+        template_name='registration/password_change_done.html'
+    ), name='password_change_done'),
+
+    # PASSWORD RESET (email-based)
+    path('accounts/password_reset/', auth_views.PasswordResetView.as_view(
+        template_name='registration/password_reset_form.html'
+    ), name='password_reset'),
+    
+    path('accounts/password_reset/done/', auth_views.PasswordResetDoneView.as_view(
+        template_name='registration/password_reset_done.html'
+    ), name='password_reset_done'),
+    
+    path('accounts/reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='registration/password_reset_confirm.html'
+    ), name='password_reset_confirm'),
+    
+    path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='registration/password_reset_complete.html'
+    ), name='password_reset_complete'),
+
     path("admin/", admin.site.urls),
     
     # Root redirects to app/
@@ -34,9 +78,17 @@ urlpatterns = [
     path('myapp/', include('myapp.urls')),  # Added this line to handle /myapp/ URLs
     
     # Add direct API routes at the root level
-    path('api/upload-model/', UploadModelView.as_view(), name="api_upload_model"),
+    path('api/upload-model/', EngineerDashboardView.as_view(), name="api_upload_model"),
+
+    path('paypal/', include("paypal.standard.ipn.urls"))
 ]
 
 # Add media URL to serve uploaded files
-if settings.DEBUG:
+if DEBUG:
+    urlpatterns.extend([
+        path('400', handler400, name='400'),
+        path('403', handler403, name='403'),
+        path('404', handler404, name='404'),
+        path('500', handler500, name='500')]
+    )
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

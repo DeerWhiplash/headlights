@@ -286,12 +286,23 @@ class UserProfile(models.Model):
                        ) -> SimpleResultWithPayload:   
         result = SimpleResultWithPayload()
         
+        groupID = int(groupID)
+
         result.add_messages_from_result_and_mark_unsuccessful_if_error_found(UserProfile.validate_unique_username(username))
         if not result.success:
             return result
         
         with transaction.atomic():
-            newUserAuth = User.objects.create_user(username=username, email=email, password=password)
+            user_kwargs = {
+                'username': username,
+                'email': email,
+                'password': password,
+            }
+
+            if groupID == UserProfile.GroupIDs.ENGINEER_ID:
+                user_kwargs['is_active'] = False
+
+            newUserAuth = User.objects.create_user(**user_kwargs)
             
             # All users should have end user/customer permissions
             endUserGroup = Group.objects.get(id=UserProfile.GroupIDs.END_USER_ID)
@@ -336,6 +347,7 @@ class FinanceReport(models.Model):
     generated_invoice = models.CharField(db_column='GeneratedInvoice', max_length=255, blank=True, null=True)
     user_id = models.ForeignKey(UserProfile, models.PROTECT, db_column='CreatedBy', blank=True, null=True, related_name='reports_created') 
     created_at = models.DateTimeField(db_column='CreatedAt', blank=False, null=False)
+    paid = models.BooleanField(db_column='Paid', blank=False, null=False, default=False)
     
     class Meta:
         managed = True
@@ -401,7 +413,7 @@ class PredictionModel(models.Model):
         """
         This function returns a PredictionModel in a neat string format.
         """
-        price_str = f"${self.price_per_prediction:.2f}" if self.price_per_prediction is not None else "N/A"
+        price_str = f"£{self.price_per_prediction:.2f}" if self.price_per_prediction is not None else "N/A"
         return f"{self.model_name} ({self.model_type}) – {price_str}"
 
 
@@ -448,7 +460,22 @@ class TrainingDataset(models.Model):
         This function returns a TrainingDataset in a neat string format.
         """
         return f"{self.claim_id}"
-
+    
+    @staticmethod
+    def add_claims_to_training_data(claims: list[Claim]) -> SimpleResultWithPayload:
+        result = SimpleResultWithPayload()
+        added_training_data: list[TrainingDataset] = []
+        
+        with transaction.atomic():
+            for claim in claims:
+                training_data = TrainingDataset()
+                training_data.claim_id = claim
+                training_data.save()
+                added_training_data.append(training_data)
+        
+        result.payload = added_training_data
+        return result
+                
 
 class UploadedRecord(models.Model):
     uploaded_record_id = models.AutoField(db_column='UploadedRecordID', primary_key=True)  

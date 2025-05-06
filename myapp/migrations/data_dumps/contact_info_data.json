@@ -1,0 +1,119 @@
+[
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 1,
+        "fields": {
+        "phone": null,
+        "email": "ANAdmin@ufcfur_15_3.com",
+        "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 2,
+        "fields": {
+            "phone": null,
+            "email": "DrFirst@ufcfur_15_3.com",
+            "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 3,
+        "fields": {
+            "phone": null,
+            "email": "MrRobSmith@ufcfur_15_3.com",
+            "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 4,
+        "fields": {
+            "phone": null,
+            "email": "MsLizBrown@ufcfur_15_3.com",
+            "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 5,
+        "fields": {
+            "phone": null,
+            "email": "MrHesitant@ufcfur_15_3.com",
+            "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 6,
+        "fields": {
+            "phone": null,
+            "email": "MrFinAnne@ufcfur_15_3.com",
+            "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 7,
+        "fields": {
+            "phone": null,
+            "email": "MrCionaodhOwen@ufcfur_15_3.com",
+            "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 8,
+        "fields": {
+            "phone": null,
+            "email": "MsRacheleBeyersdorf@ufcfur_15_3.com",
+            "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 9,
+        "fields": {
+            "phone": null,
+            "email": "MsGracianaAaij@ufcfur_15_3.com",
+            "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 10,
+        "fields": {
+            "phone": null,
+            "email": "MrRamiBjörnsson@ufcfur_15_3.com",
+            "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 11,
+        "fields": {
+            "phone": null,
+            "email": "MsOndinaSilje@ufcfur_15_3.com",
+            "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 12,
+        "fields": {
+            "phone": null,
+            "email": "MrAldegarBuhr@ufcfur_15_3.com",
+            "address": null
+        }
+    },
+    {
+        "model": "myapp.ContactInfo",
+        "pk": 1001,
+        "fields": {
+            "phone": null,
+            "email": "hello@ufcfur_15_3.com",
+            "address": null
+        }
+    }
+]

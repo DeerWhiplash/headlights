@@ -307,7 +307,7 @@ class CustomerUploadTest(BaseViewTest, TestCase):
             data = f.read()
             
         valid_file = SimpleUploadedFile("test.csv", data)
-        payload = {'claims_file': valid_file}
+        payload = {'claims_file': valid_file, 'trainingData': True}
         response = BaseViewTest._test_post_view_response(self, payload=payload)
             
         self.assertJSONEqual(

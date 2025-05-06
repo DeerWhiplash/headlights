@@ -1,12 +1,13 @@
 from django import forms
-from django.shortcuts import render
+from django.conf import settings
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.db.models import Q, Sum, F
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 
 from datetime import datetime
 import json
@@ -14,6 +15,8 @@ import logging
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import traceback
+
+from paypal.standard.forms import PayPalPaymentsForm
 
 from myapp.models import UserProfile, Company, FinanceReport, UploadedRecord
 from myapp.utility.SimpleResults import SimpleResult
@@ -88,10 +91,32 @@ class FinanceDashboardView(View):
             invoices = FinanceReport.objects.all().order_by('-created_at')
         elif user_profile.company_id is not None:
             invoices = FinanceReport.objects.filter(company_id=user_profile.company_id).order_by('-created_at')
+        else:
+            invoices = FinanceReport.objects.filter(user_profile_id=user_profile.user_profile_id).order_by('-created_at')
 
         invoice_form = InvoiceForm()
 
         num_invoices = invoices.count() if invoices is not None else 0
+
+        if not request.user.is_superuser:
+            for invoice in invoices:
+                if not invoice.paid:
+                    if invoice.cost_incurred == 0:
+                        invoice.paid = True
+                        invoice.save()
+                        continue
+
+                    paypal_dict = {
+                        "business": settings.PAYPAL_RECEIVER_EMAIL,
+                        "amount": invoice.cost_incurred,
+                        "currency_code": "GBP",
+                        "item_name": (str(invoice.month) + "/" + str(invoice.year)),
+                        "invoice": invoice.finance_report_id,
+                        "notify_url": request.build_absolute_uri(reverse('paypal-ipn')),
+                        "return": request.build_absolute_uri(reverse("finance_dashboard")),
+                        "cancel_return": request.build_absolute_uri(reverse("finance_dashboard")),
+                    }
+                    invoice.payment_form = PayPalPaymentsForm(initial=paypal_dict)
 
         context = {
             'num_invoices': num_invoices,

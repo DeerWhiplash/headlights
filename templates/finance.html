@@ -128,6 +128,7 @@
             <th>Month</th>
             <th>Year</th>
             <th>Date Created</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -145,8 +146,16 @@
             <td>{{ invoice.month }}</td>
             <td>{{ invoice.year }}</td>
             <td>{{ invoice.created_at|date:"Y-m-d" }}</td>
+            {% if invoice.paid %}
+              <td>PAID</td>
+            {% else %}
+              <td>UNPAID</td>
+            {% endif %}
             <td>
               <a href="{% url 'invoice_download' invoice.finance_report_id %}" class="btn btn-sm btn-outline-primary">Download</a>
+              {% if invoice.payment_form %}
+                {{ invoice.payment_form.render }}
+              {% endif %}
             </td>
           </tr>
           {% empty %}

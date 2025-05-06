@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models, connection
 from django.test import TransactionTestCase, override_settings
+
 from unittest.mock import patch
 
 from myapp.models import DatabaseLog, OperationLookup, TableLookup, User, UserProfile
@@ -39,9 +40,7 @@ class LoggingSignalsTest(TransactionTestCase):
         settings.TESTING = False
         super().setUp()
 
-    def tearDown(self):
-        pass
-
+    @override_settings(TESTING=False)
     @patch("myapp.middleware.get_current_user")
     def test_log_create_signal(self, mock_get_current_user):
         mock_get_current_user.return_value = self.user_profile.auth_id
@@ -53,6 +52,7 @@ class LoggingSignalsTest(TransactionTestCase):
             operation_performed=self.operation_create
         ).exists())
     
+    @override_settings(TESTING=False)
     @patch("myapp.middleware.get_current_user")
     def test_log_update_signal(self, mock_get_current_user):
         mock_get_current_user.return_value = self.user_profile.auth_id
@@ -66,6 +66,7 @@ class LoggingSignalsTest(TransactionTestCase):
             operation_performed=self.operation_update
         ).exists())
     
+    @override_settings(TESTING=False)
     @patch("myapp.middleware.get_current_user")
     def test_log_delete_signal(self, mock_get_current_user):
         mock_get_current_user.return_value = self.user_profile.auth_id
@@ -77,7 +78,8 @@ class LoggingSignalsTest(TransactionTestCase):
             affected_table_id=self.table_lookup,
             operation_performed=self.operation_delete
         ).exists())
-    
+
+    @override_settings(TESTING=False)
     @patch("myapp.middleware.get_current_user")
     def test_log_create_signal_without_user(self, mock_get_current_user):
         mock_get_current_user.return_value = None

@@ -12,7 +12,7 @@ class ErrorCodes:
 
 class Views:
     HOME = "index"
-    MACHINE_LEARNING = "ml_dashboard"
+    MACHINE_LEARNING = "engineer"
     CUSTOMER_DASHBOARD = "customer_dashboard"
     CUSTOMER_UPLOAD = "upload_claims"
     CUSTOMER_PREPROCESSING = "claims_preprocessing"
@@ -22,14 +22,19 @@ class Views:
     FINANCE_DASHBOARD = "finance_dashboard"
     COMPANY_DETAILS = "company_details"
     COMPANY_MANAGE_EMPLOYEES = "company_manage_employees"
+    EDIT_MODEL = "edit_model"
 
     API_MODELS_LIST = "api_models_list"
     API_UPLOAD_MODEL = "api_upload_model"
 
+    ERROR_400 = "400"
+    ERROR_403 = "403"
+    ERROR_404 = "404"
+    ERROR_500 = "500"
+
 class Templates:
     HOME = "index.html"
-    MACHINE_LEARNING = "ml/ml.html"
-    ML_UPLOAD_MODEL = "ml/upload_model.html"
+    ENGINEER = "engineer.html"
     CUSTOMER = "customer.html"
     FINANCE = "finance.html"
     CONTACT_DETAILS = "contact_details.html"
@@ -37,6 +42,7 @@ class Templates:
     COMPANY_DETAILS = "company_details.html"
     COMPANY_USER_MANAGEMENT = "company_manage_users.html"
     CUSTOMER_PREPROCESSING = "claims_preprocessing.html"
+    ENGINEER_EDIT_MODEL = "edit_model.html"
     
     ACCOUNT_CREATION = "registration/account_creation.html"
     LOGGED_OUT = "registration/logged_out.html"
@@ -46,6 +52,12 @@ class Templates:
     PASSWORD_RESET_DONE = "registration/password_reset_done.html"
     PASSWORD_RESET_EMAIL = "registration/password_reset_email.html"
     PASSWORD_RESET_FORM = "registration/password_reset_form.html"
+
+    ERROR_400 = "errors/400.html"
+    ERROR_403 = "errors/403.html"
+    ERROR_404 = "errors/404.html"
+    ERROR_500 = "errors/500.html"
+    ERROR_403_CSRF = '403_csrf.html'
 
 class TestData:
     EMAIL = "test@headlights.com"

@@ -5,14 +5,17 @@ from django.urls import path
 
 from myapp.views.CustomerDashBoardView import CustomerDashboardView, ClaimUploadView, PredictionFeedbackView, ProcessClaimsFileView
 from myapp.views.IndexView import IndexView
-from myapp.views.MLDashboardView import MLDashboardView, UploadModelView
+from myapp.views.EngineerDashboardView import EngineerDashboardView, EditPredictionModelView
 from myapp.views.AccountManagementView import AccountCreationView, AccountContactDetailsView
 from myapp.views.FinanceDashboardViews import FinanceDashboardView, CompanyDetailsView, CompanyManageEmployeesView, download_invoice, load_entity_field
 
 
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),
-    path("ml/", MLDashboardView.as_view() , name="ml_dashboard"),
+    
+    # Engineer dashboard URLs
+    path("engineer/", EngineerDashboardView.as_view() , name="engineer"),
+    path("engineer/edit-model/<int:model_id>/", EditPredictionModelView.as_view(), name="edit_model"),
     
     # Customer dashboard URLs
     path("customer/", CustomerDashboardView.as_view(), name="customer_dashboard"),  
@@ -32,8 +35,6 @@ urlpatterns = [
     path("finance/manage-employees/", CompanyManageEmployeesView.as_view(), name="company_manage_employees"),
     path("finance/invoice-download/<int:invoice_id>/", download_invoice, name="invoice_download"),
     path("ajax/load-entity-field/", load_entity_field, name="load_entity_field"),
-    
-    # ML-related API endpoints
-    path("api/upload-model/", UploadModelView.as_view(), name="upload_model"),
+
     # Additional endpoints could be added here as needed
 ]

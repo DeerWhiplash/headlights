@@ -1,0 +1,77 @@
+{% extends "base_generic.html" %}
+{% load widget_tweaks %}
+
+{% block title %}
+  <title>Engineer Dashboard | Headlights</title>
+{% endblock %}
+
+{% block content %}
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="bi bi-pencil-fill me-2"></i>Edit Model
+            </h1>
+        </div>
+    </div>
+
+        <!-- Upload Model Form -->
+        <div>
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <strong>Upload Model</strong>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="uploadModelForm">
+                        {% csrf_token %}
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.model_name.id_for_label }}" class="form-label">{{ form.model_name.label }}</label>
+                                {{ form.model_name|add_class:"form-control" }}
+                                {% if form.model_name.errors %}
+                                    <div class="text-danger small">{{ form.model_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.price_per_prediction.id_for_label }}" class="form-label">{{ form.price_per_prediction.label }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">&pound;</span>
+                                    {{ form.price_per_prediction|attr:"placeholder:0.00"|add_class:"form-control" }}
+                                </div>
+                                {% if form.price_per_prediction.errors %}
+                                    <div class="text-danger small">{{ form.price_per_prediction.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if form.fields.data_processing_options.choices %}
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.data_processing_options.label }}</label>
+                                {% for id, choice in form.data_processing_options.field.choices %}
+                                    <div class="form-check">
+                                        <input type="checkbox" name="{{ form.data_processing_options.html_name }}" id="id_{{ id }}" value="{{ id }}"{% if choice.0 in form.data_processing_options.value %} checked{% endif %} class="form-check-input">
+                                        <label class="form-check-label" for="id_{{ id }}">{{ choice }}</label>
+                                    </div>
+                                {% endfor %}
+                                {% if form.data_processing_options.errors %}
+                                    <div class="text-danger small">{{ form.data_processing_options.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }}</label>
+                            {{ form.notes|add_class:"form-control" }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger small">{{ form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="text-end mt-4">
+                            <button type="submit" class="btn btn-success px-4">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+{% endblock %}

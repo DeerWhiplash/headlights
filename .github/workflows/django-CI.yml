@@ -51,6 +51,8 @@ jobs:
           TESTING: "True"
       run: |
         python manage.py migrate
+        python manage.py create_crud_mappings
+        python manage.py populate_table_lookup
     - name: Run Tests for myapp
       env:
         DATABASE_ENGINE: django.db.backends.mysql

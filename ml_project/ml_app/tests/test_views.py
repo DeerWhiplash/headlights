@@ -24,7 +24,8 @@ class ModelListTestCase(TestCase):
             model_name='test_model',
             model_type='default',
             notes='',
-            filepath=filepath)
+            filepath=filepath
+        )
         
         step = PreprocessingStep.objects.create(
             preprocessing_step_id = 1,
@@ -49,7 +50,13 @@ class ModelListTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual('test_model', data['models'][0]['name'])
-        self.assertEqual(['create_days_between_col'], data['models'][0]['preprocessingSteps'])
+        self.assertEqual(['create_days_between_col'], data['models'][0]['preprocessing_steps'])
+        
+        response = self.client.get(self.url + "1/")
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual('test_model', data['models'][0]['name'])
+        self.assertEqual(['create_days_between_col'], data['models'][0]['preprocessing_steps'])
 
     def test_no_models_found(self):
 
@@ -133,11 +140,10 @@ class ModelUploadTestCase(TestCase):
         logging.disable(logging.ERROR)
 
     def test_invalid_preprocessing_ids(self):
-         
         data = {
             'model_name': 'TestModel',
             'notes': 'test notes',
-            'selected_steps': [10000, 20000]
+            'data_processing_options': [10000, 20000]
         }
 
         response = self.client.post(self.url, data={
@@ -157,7 +163,7 @@ class ModelUploadTestCase(TestCase):
         data = {
             'model_name': 'TestModel',
             'notes': 'test notes',
-            'selected_steps': [self.preprocessingStep.preprocessing_step_id]
+            'data_processing_options': [self.preprocessingStep.preprocessing_step_id]
         }
 
         response = self.client.post(self.url, data={
@@ -181,7 +187,7 @@ class ModelUploadTestCase(TestCase):
         data = {
             'model_name': 'TestModel',
             'notes': 'test notes',
-            'selected_steps': [self.preprocessingStep.preprocessing_step_id]
+            'data_processing_options': [self.preprocessingStep.preprocessing_step_id]
         }
 
         response = self.client.post(self.url, data={
@@ -191,3 +197,40 @@ class ModelUploadTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['message'], 'No model file provided')
         self.assertFalse(PredictionModel.objects.filter(model_name='TestModel').exists())
+
+class EditModelTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.model_id = 2
+        self.url = f'/api/model/edit/{self.model_id}/'
+        
+        filepath = '/shared/media/models/limited_model.pkl'
+        
+        self.model = PredictionModel.objects.create(
+            model_id=self.model_id,
+            model_name='test_model',
+            model_type='default',
+            notes='',
+            filepath=filepath
+        )
+        
+        self.preprocessingStep = PreprocessingStep.objects.create(
+            preprocessing_step_id = 1,
+            preprocess_name = 'create_days_between_col'
+        )
+        
+    def test_edit_model_success(self):
+        data = {
+            "model_name": "EditModel",
+            "notes": "",
+            "price_per_prediction": 1,
+            "data_processing_options": [1]
+        }
+        logging.warning(self.model_id)
+        logging.warning(self.url)
+        response = self.client.post(self.url, data=data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 'success')
+        self.assertTrue(PredictionModel.objects.filter(model_name='EditModel').exists())
+        

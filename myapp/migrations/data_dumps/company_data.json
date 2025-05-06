@@ -1,0 +1,10 @@
+[
+    {
+      "model": "myapp.Company",
+      "pk": 1,
+      "fields": {
+        "contact_info_id": 1001,
+        "name": "ufcfur_15_3"
+      }
+    }
+]

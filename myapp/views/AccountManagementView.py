@@ -23,11 +23,7 @@ class AccountCreationView(View):
 
     template_name = "registration/account_creation.html"
 
-    def get(self, request: HttpRequest) -> HttpResponse: 
-        # Kick out any user that is already logged in  
-        if request.user.is_authenticated:
-            return redirect("index")
-            
+    def get(self, request: HttpRequest) -> HttpResponse:       
         return self.__render_account_creation_page(request, None)
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -52,7 +48,7 @@ class AccountCreationView(View):
         if (userProfile.auth_id.groups.filter(id=UserProfile.GroupIDs.FINANCE_ID).exists() and is_owner):
             result = Company.create_new_company(userProfile, company_name)
         
-        login(request, userProfile.auth_id)
+        login(request, userProfile.auth_id, backend='django.contrib.auth.backends.ModelBackend')
         return redirect("index")
 
     def __render_account_creation_page(self, request, error_messages: list[Message]) -> HttpResponse:

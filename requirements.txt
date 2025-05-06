@@ -2,11 +2,13 @@ asgiref==3.8.1
 coverage==7.6.12
 Django==5.1.7
 django-bootstrap-modal-forms==3.0.5
+django-paypal==2.1
 django-widget-tweaks==1.5.0
 dotenv==0.9.9
 gunicorn==23.0.0
 mysql-connector-python==9.2.0
 mysqlclient==2.2.0
+ngrok==1.4.0
 numpy==2.2.3
 pandas==2.2.3
 psycopg2-binary==2.9.10
@@ -14,3 +16,4 @@ reportlab==4.4.0
 requests==2.32.2
 ruff==0.9.8
 sqlparse==0.5.2
+WhiteNoise==6.9.0

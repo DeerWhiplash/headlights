@@ -36,7 +36,7 @@ class MLDashboardView(View):
     """
     This class handles the rendering and processing of the machine learning dashboard page.
     """
-    template_name = "ml/ml.html"
+    template_name = "engineer.html"
 
     def get(self, request: HttpRequest) -> HttpResponse:
         """
@@ -51,16 +51,21 @@ class ModelListView(View):
     """
     This class handles the listing of all available ML models directly from the Django database.
     """
-    def get(self, request: HttpRequest) -> JsonResponse:
+    def get(self, request: HttpRequest, model_id=None) -> JsonResponse:
         """
         Handles the GET request for listing all available ML models.
         """
         try:
             preprocessing_steps_queryset = PreprocessingModelMap.objects.select_related('preprocessing_step_id')
 
-            models = PredictionModel.objects.prefetch_related(
-                Prefetch('preprocessingmodelmap_set', queryset=preprocessing_steps_queryset, to_attr='preprocessing_steps')
-            ).all()
+            if model_id:
+                models = PredictionModel.objects.prefetch_related(
+                    Prefetch('preprocessingmodelmap_set', queryset=preprocessing_steps_queryset, to_attr='preprocessing_steps')
+                ).filter(model_id=model_id)
+            else:
+                models = PredictionModel.objects.prefetch_related(
+                    Prefetch('preprocessingmodelmap_set', queryset=preprocessing_steps_queryset, to_attr='preprocessing_steps')
+                ).all()
 
             models_list = [
                 {
@@ -68,7 +73,8 @@ class ModelListView(View):
                     'name': model.model_name,
                     'notes': model.notes,
                     'filepath': model.filepath,
-                    'preprocessingSteps': [map_item.preprocessing_step_id.preprocess_name for map_item in model.preprocessing_steps]
+                    'price_per_prediction': model.price_per_prediction,
+                    'preprocessing_steps': [map_item.preprocessing_step_id.preprocess_name for map_item in model.preprocessing_steps]
                 }
                 for model in models
             ]
@@ -107,7 +113,8 @@ class UploadModelView(View):
             # Get model name and notes from the request
             model_name = request.POST.get('model_name')
             notes = request.POST.get('notes', '')
-            selected_steps = request.POST.getlist('selected_steps')
+            data_processing_options = request.POST.get('data_processing_options')
+            price_per_prediction = request.POST.get('price_per_prediction')
             
             # Check if model file was provided
             if 'model_file' not in request.FILES:
@@ -128,9 +135,9 @@ class UploadModelView(View):
                     'message': 'Invalid file format. Only .pkl files are allowed.'
                 }, status=400)
             
-            if(selected_steps):
-                preprocessingSteps = PreprocessingStep.objects.filter(preprocessing_step_id__in=selected_steps)
-                if(not preprocessingSteps):
+            if(data_processing_options):
+                preprocessing_steps = PreprocessingStep.objects.filter(preprocessing_step_id__in=data_processing_options)
+                if(not preprocessing_steps):
                     logger.info("Preprocessing ids do not exist")
                     return JsonResponse({
                         'status': 'error',
@@ -151,12 +158,13 @@ class UploadModelView(View):
             model = PredictionModel.objects.create(
                 model_name=model_name,
                 notes=notes,
-                filepath=file_path
+                filepath=file_path,
+                price_per_prediction=price_per_prediction,
             )
 
             objects = []
-            if(selected_steps):
-                for x in selected_steps:
+            if(data_processing_options):
+                for x in data_processing_options:
                     objects.append(PreprocessingModelMap(preprocessing_step_id_id = int(x), model_id_id = model.model_id))
 
                 PreprocessingModelMap.objects.bulk_create(objects)
@@ -174,6 +182,34 @@ class UploadModelView(View):
                 'status': 'error',
                 'message': f"An unexpected error occurred: {str(e)}"
             }, status=500)
+
+@method_decorator(csrf_exempt, name="dispatch")
+class EditModelView(View):
+    def post(self, request: HttpRequest, model_id) -> JsonResponse:
+        model_name = request.POST.get('model_name')
+        notes = request.POST.get('notes', '')
+        data_processing_options = request.POST.get('data_processing_options')
+        price_per_prediction = request.POST.get('price_per_prediction')
+        
+        model = PredictionModel.objects.get(model_id=model_id)
+        model.model_name = model_name or model.model_name
+        model.notes = notes
+        model.price_per_prediction = price_per_prediction or model.price_per_prediction
+        model.save()
+        
+        PreprocessingModelMap.objects.filter(model_id=model_id).delete()
+        objects = []
+        if data_processing_options:
+            for x in data_processing_options:
+                objects.append(PreprocessingModelMap(preprocessing_step_id_id = int(x), model_id_id = model.model_id))
+                
+            PreprocessingModelMap.objects.bulk_create(objects)
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'PredictionModel edited successfully',
+        }, status=status.HTTP_200_OK)
+
             
 class ModelPredict(APIView):
     

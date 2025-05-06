@@ -313,6 +313,11 @@ input[type="text"], textarea {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
+.scrollable-x {
+  overflow-x: scroll;
+  scrollbar-color: var(--body-color) var(--body-bg);
+}
+
 [data-theme="dark"] .table-hover > tbody > tr:hover > * {
   background-color: rgba(255, 255, 255, 0.05);
 }
@@ -557,7 +562,7 @@ html {
 [data-theme="dark"] select,
 [data-theme="dark"] textarea,
 [data-theme="dark"] .form-control {
-  background-color: #23272b;
+  /* background-color: #23272b; */
   color: #e0e0e0;
   border-color: #444;
 }
@@ -940,5 +945,16 @@ html {
 
 /* Ensure the form control text is visible in dark mode */
 [data-theme="dark"] .form-control {
+  color: var(--body-color);
+}
+
+[data-theme="dark"] .input-group-text {
+  background-color: #343a40;
+  color: #f8f9fa;          
+  border-color: #495057;
+}
+
+[data-theme="dark"] .page-link {
+  background-color: #343a40;
   color: var(--body-color);
 }

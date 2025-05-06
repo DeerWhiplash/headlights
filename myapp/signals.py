@@ -5,13 +5,31 @@ from django.dispatch import receiver
 from django.utils.timezone import now
 
 from myapp.middleware import get_current_user
-from myapp.models import DatabaseLog, OperationLookup, TableLookup, UserProfile
+from myapp.models import DatabaseLog, OperationLookup, TableLookup, UserProfile, FinanceReport
+
+from paypal.standard.models import ST_PP_COMPLETED
+from paypal.standard.ipn.signals import valid_ipn_received
 
 from threading import local
 import logging
 
-logging = logging.getLogger(__name__)
+logger = logging.getLogger("myapp.signals")
 local = local()
+
+@receiver(valid_ipn_received)
+def process_payment(sender, **kwargs):
+    logger.info("IPN signal received")
+    ipn_obj = sender
+    if ipn_obj.payment_status == ST_PP_COMPLETED:
+        if ipn_obj.receiver_email != "business@headlights.com":
+            logger.warning(f"Incorrect receiver email, received: {ipn_obj.receiver_email}")
+            return
+
+        invoice = FinanceReport.objects.get(finance_report_id=ipn_obj.invoice)
+        invoice.paid = True
+        invoice.save()
+
+valid_ipn_received.connect(process_payment)
 
 def prevent_recursion():
     """Prevent recursion by checking if the signal is already handled."""
@@ -49,7 +67,7 @@ def log_create_or_update(sender, instance, created, **kwargs):
                 successful=True
             )
     except Exception as e:
-        logging.warning(f"Failed to save logging to DB: {e}")
+        logger.info(f"Failed to save logging to DB: {e}")
     finally:
         set_in_signal(False)
 
@@ -81,6 +99,6 @@ def log_delete(sender, instance, **kwargs):
                 successful=True
             )
     except Exception as e:
-        logging.warning(f"Failed to save logging to DB: {e}")
+        logger.info(f"Failed to save logging to DB: {e}")
     finally:
         set_in_signal(False)
