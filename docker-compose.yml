@@ -60,11 +60,6 @@ services:
     restart: always
     env_file:
       - .env
-    healthcheck:
-      test: curl --fail http://localhost:8000/ || exit 1
-      interval: 40s
-      timeout: 5s
-      retries: 100
     networks:
       - app-network
 
