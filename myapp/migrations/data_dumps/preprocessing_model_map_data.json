@@ -1,0 +1,10 @@
+[
+    {
+      "model": "myapp.PreprocessingModelMap",
+      "pk": 1,
+      "fields": {
+        "preprocessing_step_id": 1,
+        "model_id": 1
+      }
+    }
+]

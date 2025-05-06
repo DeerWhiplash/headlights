@@ -1,0 +1,13 @@
+[
+    {
+      "model": "myapp.PredictionModel",
+      "pk": 1,
+      "fields": {
+        "model_name": "Limited Forest Model",
+        "model_type": "Random Forest",
+        "notes": null,
+        "filepath": "/shared/media/models/limited_model.pkl",
+        "price_per_prediction": 10
+      }
+    }
+]
