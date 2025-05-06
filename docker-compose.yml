@@ -17,7 +17,7 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 100
     networks:
       - app-network
   ngrok:
@@ -41,8 +41,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      ml-service:
-        condition: service_started
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DEBUG: ${DEBUG}
@@ -63,15 +61,20 @@ services:
       - ./static:/app/static
     restart: always
     command: >
-      sh -cx "python manage.py migrate 
+      sh -cx "apt-get --assume-yes install curl
+      && python manage.py migrate 
       && python manage.py create_crud_mappings
       && python manage.py populate_table_lookup
-      && python manage.py loaddata myapp/migrations/data_dumps/auth_group_data.json 
-      && python manage.py loaddata myapp/migrations/data_dumps/auth_user_data.json
+      && python manage.py loaddata myapp/migrations/data_dumps/*_data.json
       && python manage.py collectstatic --no-input
       && python manage.py runserver 0.0.0.0:8000 "
     env_file:
       - .env
+    healthcheck:
+      test: curl --fail http://localhost:8000/ || exit 1
+      interval: 40s
+      timeout: 5s
+      retries: 100
     networks:
       - app-network
 
@@ -84,6 +87,8 @@ services:
       - "8001:8001"
     depends_on:
       db:
+        condition: service_healthy
+      django-web:
         condition: service_healthy
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}

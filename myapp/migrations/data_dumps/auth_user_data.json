@@ -6,10 +6,10 @@
       "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
       "last_login": "2025-02-26T16:22:10Z",
       "is_superuser": true,
-      "username": "superuser",
+      "username": "A.N. Admin",
       "first_name": "",
       "last_name": "",
-      "email": "jackdouet@gmail.com",
+      "email": "ANAdmin@ufcfur_15_3.com",
       "is_staff": true,
       "is_active": true,
       "date_joined": "2025-02-26T16:21:37Z",
@@ -21,17 +21,17 @@
     "model": "auth.user",
     "pk": 2,
     "fields": {
-      "password": "pbkdf2_sha256$870000$icSk8tALawLpoyLKRKGZyo$cQ49E11aAqeSzYbJ+AwgqwhzBkZ1kk48/IeTcFCrQIg=",
-      "last_login": null,
+      "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
+      "last_login": "2025-02-26T16:22:10Z",
       "is_superuser": false,
-      "username": "testuser",
+      "username": "Dr First",
       "first_name": "",
       "last_name": "",
-      "email": "",
+      "email": "DrFirst@ufcfur_15_3.com",
       "is_staff": false,
       "is_active": true,
-      "date_joined": "2025-02-26T17:21:40.698Z",
-      "groups": [],
+      "date_joined": "2025-02-26T16:21:37Z",
+      "groups": [1, 2],
       "user_permissions": []
     }
   },
@@ -39,17 +39,179 @@
     "model": "auth.user",
     "pk": 3,
     "fields": {
-      "password": "pbkdf2_sha256$870000$GQ6Szld75hkZIjnkXkf81j$Ba/FoFd9HtHxOrMpcbIMkKcdxgdX4RRfU7m1b7Atn54=",
-      "last_login": null,
+      "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
+      "last_login": "2025-02-26T16:22:10Z",
       "is_superuser": false,
-      "username": "testfinance",
+      "username": "Mr Rob Smith",
       "first_name": "",
       "last_name": "",
-      "email": "",
+      "email": "MrRobSmith@ufcfur_15_3.com",
       "is_staff": false,
       "is_active": true,
-      "date_joined": "2025-02-26T17:22:55Z",
-      "groups": [4],
+      "date_joined": "2025-02-26T16:21:37Z",
+      "groups": [1],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
+      "last_login": "2025-02-26T16:22:10Z",
+      "is_superuser": false,
+      "username": "Ms Liz Brown",
+      "first_name": "",
+      "last_name": "",
+      "email": "MsLizBrown@ufcfur_15_3.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-02-26T16:21:37Z",
+      "groups": [1],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 5,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
+      "last_login": "2025-02-26T16:22:10Z",
+      "is_superuser": false,
+      "username": "Mr Hesitant",
+      "first_name": "",
+      "last_name": "",
+      "email": "MrHesitant@ufcfur_15_3.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-02-26T16:21:37Z",
+      "groups": [1],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 6,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
+      "last_login": "2025-02-26T16:22:10Z",
+      "is_superuser": false,
+      "username": "Mr Fin Anne",
+      "first_name": "",
+      "last_name": "",
+      "email": "MrFinAnne@ufcfur_15_3.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-02-26T16:21:37Z",
+      "groups": [1, 4],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 7,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
+      "last_login": "2025-02-26T16:22:10Z",
+      "is_superuser": false,
+      "username": "Mr Cionaodh Owen",
+      "first_name": "",
+      "last_name": "",
+      "email": "MrCionaodhOwen@ufcfur_15_3.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-02-26T16:21:37Z",
+      "groups": [1],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 8,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
+      "last_login": "2025-02-26T16:22:10Z",
+      "is_superuser": false,
+      "username": "Ms Rachele Beyersdorf",
+      "first_name": "",
+      "last_name": "",
+      "email": "MsRacheleBeyersdorf@ufcfur_15_3.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-02-26T16:21:37Z",
+      "groups": [1],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 9,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
+      "last_login": "2025-02-26T16:22:10Z",
+      "is_superuser": false,
+      "username": "Ms Graciana Aaij",
+      "first_name": "",
+      "last_name": "",
+      "email": "MsGracianaAaij@ufcfur_15_3.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-02-26T16:21:37Z",
+      "groups": [1],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 10,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
+      "last_login": "2025-02-26T16:22:10Z",
+      "is_superuser": false,
+      "username": "Mr Rami Björnsson",
+      "first_name": "",
+      "last_name": "",
+      "email": "MrRamiBjörnsson@ufcfur_15_3.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-02-26T16:21:37Z",
+      "groups": [1],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 11,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
+      "last_login": "2025-02-26T16:22:10Z",
+      "is_superuser": false,
+      "username": "Ms Ondina Silje",
+      "first_name": "",
+      "last_name": "",
+      "email": "MsOndinaSilje@ufcfur_15_3.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-02-26T16:21:37Z",
+      "groups": [1],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 12,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$i7knwADmEjjS6NBJ50XYi0$W4Mg1PfcVpyhBvLVPDJakLF2DIsQ6+y8LDT+y0K/i2o=",
+      "last_login": "2025-02-26T16:22:10Z",
+      "is_superuser": false,
+      "username": "Mr Aldegar Buhr",
+      "first_name": "",
+      "last_name": "",
+      "email": "MrAldegarBuhr@ufcfur_15_3.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-02-26T16:21:37Z",
+      "groups": [1],
       "user_permissions": []
     }
   }
