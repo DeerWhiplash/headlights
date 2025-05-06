@@ -1,5 +1,5 @@
 [run]
-source = myapp, ml_project/ml_app
+source = myapp
 omit = 
     */migrations/*
     */tests/*

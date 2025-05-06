@@ -1,0 +1,25 @@
+# Docker compose up reads this override automatically. This file is used for local development
+
+services:
+  django-web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DEBUG: 1
+    command: python manage.py runserver 0.0.0.0:8000
+    healthcheck:
+      test: curl --fail http://localhost:8000/ || exit 1
+      interval: 40s
+      timeout: 5s
+      retries: 100
+
+  ml-service:
+    build:
+      context: ./ml_project
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      DEBUG: 1
+    command: python manage.py runserver 0.0.0.0:8001
