@@ -86,13 +86,14 @@
           </h5>
         </div>
         <div class="card-body">
-          <form method="post" action="{% url 'customer_dashboard' %}" class="mb-3">
+          <form method="post" id="prediction-form" action="{% url 'customer_dashboard' %}" class="mb-3">
             {% csrf_token %}
             <div class="mb-3">
               {{ uploaded_claims_form.as_p }}
             </div>
-            <button id="submit-prediction" type="submit" name="submitPredictionForm" class="btn btn-success">
-              <i class="bi bi-lightning-charge me-1"></i>Generate Prediction
+            <button id="submit-prediction" type="submit" name="submit-prediction-form" class="btn btn-success text-white w-100 justify-content-center align-items-center">
+              <i class="bi bi-lightning-charge me-1"></i>
+                Generate Prediction
             </button>
           </form>
 
@@ -237,13 +238,6 @@
         errorMessage.style.display = 'block';
       }
     });
-    function resetMessages() {
-      const errorMessage = document.getElementById('errorMessage');
-      errorMessage.style.display = 'none';
-      const confirmBox = document.getElementById('confirmationBox');
-      confirmBox.style.display = 'none';
-      document.getElementById("claimUploadSubmit").disabled = false;
-    };
     document.getElementById('confirmIgnoreValidation').addEventListener('click', async (event) => {
       event.preventDefault();
       const form = document.forms.uploadClaimsForm;
@@ -274,5 +268,16 @@
         });
       }
     });
-  </script>
+
+    const predictionForm = document.getElementById('prediction-form');
+    const submitPrediction = document.getElementById('submit-prediction');
+    predictionForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+
+          submitPrediction.disabled = true;
+          submitPrediction.innerHTML = 'Generating... <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>';
+
+          predictionForm.submit();
+        });
+    </script>
 {% endblock %}
